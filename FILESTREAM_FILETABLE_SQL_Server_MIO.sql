@@ -1,0 +1,177 @@
+--Clase jueves 07/11
+
+--Guardar FImaganes dentro d la BD
+--tipo de campo VARBINARY(MAX) . Image deprecated
+
+USE [pubs]
+GO 
+
+DROP TABLE IF EXISTS logo
+GO 
+
+CREATE TABLE logo
+(
+	logoID INT,
+	logoName VARCHAR(255),
+	logoImage VARBINARY(max)
+)
+GO
+
+INSERT INTO dbo.logo
+(
+	logoID,
+	logoName,
+	logoImage
+)
+select 1,'Arbusto',
+	* FROM OPENROWSET
+	(BULK 'C:\imagenes\Arbusto.jpg',SINGLE_BLOB) AS ImageFile
+GO
+
+INSERT INTO dbo.logo
+(
+	logoID,
+	logoName,
+	logoImage
+)
+SELECT 1,'Fruta',
+	* FROM OPENROWSET
+	(BULK 'C:\imagenes\Fruta.jpg',SINGLE_BLOB) AS ImageFile
+GO
+
+INSERT INTO dbo.logo
+(
+	logoID,
+	logoName,
+	logoImage
+)
+SELECT 1,'Flor',
+	* FROM OPENROWSET
+	(BULK 'C:\imagenes\flor.jpg',SINGLE_BLOB) AS ImageFile
+GO
+--Displayo el contenido
+SELECT * FROM logo
+GO
+
+
+USE MASTER
+CREATE DATABASE IMAGENES
+
+USE IMAGENES 
+GO
+
+CREATE TABLE DBO.DOCUMENTOS (ID INT IDENTITY,
+							  NOMBRE VARCHAR(255),
+							  CONTENIDO VARBINARY(MAX),
+							  EXTENSION CHAR(4)
+							)
+GO
+
+INSERT INTO DBO.DOCUMENTOS (NOMBRE,CONTENIDO,EXTENSION)
+SELECT 'BRAD', BULKCOLUMN,'JFIF'
+FROM OPENROWSET(BULK N'C:\Fotos_Actores\BRAD.JFIF',SINGLE_BLOB) AS DOCUMENT
+GO
+INSERT INTO DBO.DOCUMENTOS (NOMBRE,CONTENIDO,EXTENSION)
+SELECT 'TOM', BULKCOLUMN,'JFIF'
+FROM OPENROWSET(BULK N'C:\Fotos_Actores\TOM.JFIF',SINGLE_BLOB) AS DOCUMENT
+GO
+SELECT * FROM DBO.DOCUMENTOS
+
+
+
+-- FILESTREAM
+
+
+EXEC sp_configure 
+
+USE MASTER
+GO
+
+DROP DATABASE IF EXISTS PruebaFS
+GO
+CREATE DATABASE PruebaFS
+GO
+
+ALTER DATABASE PruebaFS
+	ADD FILEGROUP [PRIMARY_FILESTREAM]
+	CONTAINS FILESTREAM
+GO
+
+ALTER DATABASE PruebaFS
+	ADD FILE(
+			NAME= 'MyDatabase_filestream',
+	FILENAME = 'C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\FILESTREAM'
+	)
+	TO FILEGROUP [PRIMARY_FILESTREAM]
+GO
+
+USE PruebaFS
+GO
+
+DROP TABLE IF EXISTS IMAGEs
+GO
+CREATE TABLE images(
+		id UNIQUEIDENTIFIER ROWGUIDCOL NOT NULL UNIQUE,
+		imageFile VARBINARY(MAX) FILESTREAM
+);
+GO
+-- FOLDER C:\Fotos_Actores\
+
+INSERT INTO images(id, imageFile)
+		SELECT NEWID(), BULKColumn
+		FROM OPENROWSET(BULK N'C:\Fotos_Actores\BRAD.JFIF',SINGLE_BLOB) AS f;
+GO
+
+INSERT INTO images(id, imageFile)
+		SELECT NEWID(), BULKColumn
+		FROM OPENROWSET(BULK N'C:\Fotos_Actores\TOM.JFIF',SINGLE_BLOB) AS f;
+GO
+
+INSERT INTO images(id, imageFile)
+		SELECT NEWID(), BULKColumn
+		FROM OPENROWSET(BULK N'C:\Fotos_Actores\WILL.JFIF',SINGLE_BLOB) AS f;
+GO
+
+use PruebaFS
+ALTER TABLE [dbo].[images] DROP COLUMN [imageFile]
+GO
+ALTER TABLE [images] SET (FILESTREAM_ON="NULL")
+GO
+ALTER DATABASE PRUEBAFS REMOVE FILE MyDatabase_filestream;
+GO
+--Msg 5042, Level 16, State 10, Line 140
+--The file 'MyDatabase_filestream' cannot be removed because it is not empty.
+USE master
+GO
+ALTER DATABASE PRUEBAFS REMOVE FILE MyDatabase_filestream;
+GO
+ALTER DATABASE PRUEBAFS REMOVE FILEGROUP [PRIMARY_FILESTREAM]
+GO
+
+
+------- FILETABLE
+
+USE master
+ALTER DATABASE IMAGENES
+SET FILESTREAM(DIRECTORY_NAME = 'IMAGENES' )
+WITH ROLLBACK IMMEDIATE
+GO
+
+ALTER DATABASE [IMAGENES]
+	SET FILESTREAM(NON_TRANSACTED_ACCESS = FULL,
+	DIRECTORY_NAME = 'IMAGENES' )  WITH ROLLBACK IMMEDIATE
+GO
+
+USE IMAGENES
+DROP TABLE IF EXISTS MyDocumentsStore
+CREATE TABLE MyDocumentsStore AS FILETABLE
+WITH
+(
+	FileTable_Directory = 'MyDocumentStore',
+	FileTable_Collate_Filename = database_default,
+	FileTable_STREAMID_UNIQUE_CONSTRAINT_NAME = UQ_stream_id
+);
+SELECT * FROM MyDocumentsStore
+GO
+
+

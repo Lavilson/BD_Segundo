@@ -1,0 +1,35 @@
+DROP DATABASE IF EXISTS TestDB
+GO 
+CREATE DATABASE TestDB
+GO
+
+USE TestDB
+GO
+
+DROP SCHEMA IF EXISTS HR;
+
+DROP TABLE IF EXISTS HR.Employee
+GO
+CREATE TABLE HR.Employee
+GO
+CREATE TABLE HR.Employee
+(
+	Employee ID CHAR(2),
+	GivenName VARCHAR(50),
+	Surname VARCHAR(50),
+	SSN CHAR(9) -- No queremos que los Becarios vean esto
+);
+GO
+
+
+-- GUI IMPORT FLAT FILE Employees
+-- Employees.txt
+-- Tasks Import in GUI
+
+SELECT * FROM HR.Employee
+GO
+
+--EmployeeID	GivenName	SurName	SSN
+--1		Luis		Arias	111
+--2		Ana		Gomez	222
+--3		Juan		Perez	333
