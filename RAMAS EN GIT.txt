@@ -1,0 +1,265 @@
+BRANCHES (=RAMAS)
+
+BRANCH CHECKOUT MERGE
+
+Ver Ramas
+$ git branch experimental
+fatal: Not a valid object name: 'master'.
+
+Git creates a master branch once you've done your first commit. There's nothing to have a branch for if there's no code in the repository.
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git status
+On branch master
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        InstPubs.sql
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git add .
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git commit -m "Primer Commit"
+[master (root-commit) c32c90f] Primer Commit
+ 1 file changed, 2163 insertions(+)
+ create mode 100644 InstPubs.sql
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git log --oneline
+c32c90f (HEAD -> master) Primer Commit
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git reflog
+c32c90f (HEAD -> master) HEAD@{0}: commit (initial): Primer Commit
+
+----------------
+Modifico en fichero
+
+-- execute sp_dboption 'pubs' ,'trunc. log on chkpt.' ,'true'
+-- GO
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   InstPubs.sql
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+$ git diff
+diff --git a/InstPubs.sql b/InstPubs.sql
+index d4a1e96..8e923c2 100644
+--- a/InstPubs.sql
++++ b/InstPubs.sql
+@@ -53,8 +53,8 @@ if db_name() <> 'pubs'
+
+ GO
+
+-execute sp_dboption 'pubs' ,'trunc. log on chkpt.' ,'true'
+-GO
++-- execute sp_dboption 'pubs' ,'trunc. log on chkpt.' ,'true'
++-- GO
+
+ execute sp_addtype id      ,'varchar(11)' ,'NOT NULL'
+ execute sp_addtype tid     ,'varchar(6)'  ,'NOT NULL'
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git add .
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git commit -m "Segundo commit Commit"
+[master 31f286e] Segundo commit Commit
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git log --oneline
+31f286e (HEAD -> master) Segundo commit Commit
+c32c90f Primer Commit
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git reflog
+31f286e (HEAD -> master) HEAD@{0}: commit: Segundo commit Commit
+c32c90f HEAD@{1}: commit (initial): Primer Commit
+
+$ git diff c32c90f..31f286e
+diff --git a/InstPubs.sql b/InstPubs.sql
+index d4a1e96..8e923c2 100644
+--- a/InstPubs.sql
++++ b/InstPubs.sql
+@@ -53,8 +53,8 @@ if db_name() <> 'pubs'
+
+ GO
+
+-execute sp_dboption 'pubs' ,'trunc. log on chkpt.' ,'true'
+-GO
++-- execute sp_dboption 'pubs' ,'trunc. log on chkpt.' ,'true'
++-- GO
+
+ execute sp_addtype id      ,'varchar(11)' ,'NOT NULL'
+ execute sp_addtype tid     ,'varchar(6)'  ,'NOT NULL'
+
+Ver Ramas
+
+$ git branch
+* master
+
+$ git show-branch
+[master] Segundo commit Commit
+
+Creando Branch y cambiandote
+git branch
+git checkout experimental
+
+O bien,Creando Branch y cambiandote
+git branch
+git checkout -b otrarama
+
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git branch experimental
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git branch
+  experimental
+* master
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git checkout experimental
+Switched to branch 'experimental'
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (experimental)
+$ git branch
+* experimental
+  master
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (experimental)
+$ git status
+On branch experimental
+nothing to commit, working tree clean
+
+Copio InstNwnd
+
+$ git status
+On branch experimental
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        InstNwnd.sql
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (experimental)
+$ git status
+On branch experimental
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        new file:   InstNwnd.sql
+
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (experimental)
+$ git commit -m "Primer Commit Rama Experimental"
+[experimental 0a8f10e] Primer Commit Rama Experimental
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 InstNwnd.sql
+
+$ git checkout master
+Switched to branch 'master'
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git status
+On branch master
+nothing to commit, working tree clean
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git log --oneline
+31f286e (HEAD -> master) Segundo commit Commit
+c32c90f Primer Commit
+
+$ git log --oneline
+0a8f10e (HEAD -> experimental) Primer Commit Rama Experimental
+31f286e (master) Segundo commit Commit
+c32c90f Primer Commit
+
+
+FUSIONANDO
+
+git checkout master
+
+git merge experimental
+
+$ git checkout master
+Switched to branch 'master'
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git merge experimental
+Updating 31f286e..0a8f10e
+Fast-forward
+ InstNwnd.sql | Bin 0 -> 2115268 bytes
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 InstNwnd.sql
+
+$ git log --oneline
+0a8f10e (HEAD -> master, experimental) Primer Commit Rama Experimental
+31f286e Segundo commit Commit
+c32c90f Primer Commit
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git reflog
+0a8f10e (HEAD -> master, experimental) HEAD@{0}: merge experimental: Fast-forward
+31f286e HEAD@{1}: checkout: moving from experimental to master
+0a8f10e (HEAD -> master, experimental) HEAD@{2}: checkout: moving from master to experimental
+31f286e HEAD@{3}: checkout: moving from experimental to master
+0a8f10e (HEAD -> master, experimental) HEAD@{4}: commit: Primer Commit Rama Experimental
+31f286e HEAD@{5}: checkout: moving from master to experimental
+31f286e HEAD@{6}: checkout: moving from experimental to master
+31f286e HEAD@{7}: checkout: moving from master to experimental
+31f286e HEAD@{8}: commit: Segundo commit Commit
+c32c90f HEAD@{9}: commit (initial): Primer Commit
+
+Fusionando en experimental
+
+git merge master -m 'Un mensaje del merge de master en el branch experimental'
+
+
+Fusionando hacia Remoto
+
+git push -u origin experimental
+
+ Borrar Ramas
+
+git branch -d rama_a_borrar
+Sin embargo, puede que esta acción no nos funcione porque hayamos hecho cambios que no se hayan salvado en el repositorio remoto, o no se hayan fusionado con otras ramas. En el caso que queramos forzar el borrado de la rama, para eliminarla independientemente de si se ha hecho el push o el merge, tendrás que usar la opción "-D".
+
+git branch -D rama_a_borrar
+Debes prestar especial atención a esta opción "-D", ya que al eliminar de este modo pueden haber cambios que ya no se puedan recuperar. Como puedes apreciar, es bastante fácil de confundir con "-d", opción más segura, ya que no permite borrado de ramas en situaciones donde se pueda perder código.
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git branch -d experimental
+Deleted branch experimental (was 0a8f10e).
+
+manuel@DESKTOP-VPL66KC MINGW64 /c/pruebagit (master)
+$ git branch
+* master
+
+
+------------------------------
+The Power of Git in a Windows Shell
+
+https://tortoisegit.org/
+
+
+
+
+
+
+
+
+
+
