@@ -17,7 +17,6 @@ CREATE SYMMETRIC KEY SSN_Key_01
 GO  
 
 
-
 -- Create a column in which to store the encrypted data.
 ALTER TABLE [dbo].[Clientes]
     ADD DNI_Encrypted varbinary(128); 
@@ -65,9 +64,3 @@ SELECT TOP 3 DNI, DNI_Encrypted
 GO
 
 
-SELECT TOP 3 CardNumber, CardNumber_Encrypted 
-    AS 'Encrypted card number', CONVERT(nvarchar,  
-	DecryptByKey(CardNumber_Encrypted, 1 , 
-    HashBytes('SHA2_256', CONVERT(varbinary, CreditCardID))))
-    AS 'Decrypted card number' FROM Sales.TarjetadeCredito
-GO
